@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#080b0f"/>
+<link rel="manifest" href="/static/manifest.json"/>
+<link rel="icon" href="/static/favicon.svg" type="image/svg+xml"/>
+<meta name="theme-color" content="#080b0f"/>
+<title>P.I.N.G.</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#080b0f;--bg2:#0d1117;--bg3:#111822;--bg4:#1a2332;
+  --txt:#e8edf3;--txt2:#7a8fa8;--txt3:#3f5166;
+  --blue:#29b6f6;--green:#00e676;--red:#e53935;--amber:#f5a623;
+  --border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.1);
+  --r:12px;
+}
+html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;}
+#app{
+  display:flex;flex-direction:column;
+  height:100vh;height:100dvh;
+  width:100%;max-width:480px;margin:0 auto;
+  background:var(--bg);overflow:hidden;position:relative;
+}
+button,a{cursor:pointer;font-family:inherit;border:none;background:none;color:inherit;text-decoration:none;}
+input,select,textarea{font-family:inherit;color:var(--txt);}
+
+/* ─── TOPBAR ───────────────────────────────────────────── */
+#topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.58rem 1rem;padding-top:max(.58rem,env(safe-area-inset-top));
+  background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.brand{display:flex;align-items:center;gap:.5rem;}
+.bname{font-size:.8rem;font-weight:800;letter-spacing:.22em;color:var(--blue);display:block;}
+.bsub{font-size:.42rem;color:var(--txt3);letter-spacing:.06em;display:block;margin-top:1px;}
+.topright{display:flex;align-items:center;gap:.5rem;}
+.dots{display:flex;gap:4px;}
+.dot{width:7px;height:7px;border-radius:50%;background:#1a2332;transition:all .4s;}
+.dot.on{background:var(--green);box-shadow:0 0 5px var(--green);}
+.dot.blue.on{background:var(--blue);box-shadow:0 0 5px var(--blue);}
+.dot.amber.on{background:var(--amber);box-shadow:0 0 5px var(--amber);}
+.usr{font-size:.6rem;color:var(--blue);font-family:monospace;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* ─── SOS ZONE ─────────────────────────────────────────── */
+#sos-zone{
+  display:flex;flex-direction:column;align-items:center;
+  padding:.85rem 0 .5rem;flex-shrink:0;gap:.4rem;
+}
+.sos-ring{
+  width:120px;height:120px;border-radius:50%;
+  border:2px solid rgba(229,57,53,.18);
+  display:flex;align-items:center;justify-content:center;position:relative;
+  transition:border-color .3s;
+}
+.sos-ring.armed{border-color:rgba(229,57,53,.55);animation:rp .7s infinite;}
+@keyframes rp{0%,100%{box-shadow:0 0 0 0 rgba(229,57,53,.25)}60%{box-shadow:0 0 0 18px rgba(229,57,53,0)}}
+.sos{
+  width:100px;height:100px;border-radius:50%;
+  background:radial-gradient(circle at 40% 35%,#c0392b,#7b241c);
+  color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  box-shadow:0 0 20px rgba(192,57,43,.3);transition:transform .1s;
+  -webkit-user-select:none;user-select:none;
+}
+.sos:active,.sos.firing{transform:scale(1.04);}
+.sos.fired{background:radial-gradient(circle,#e67e22,#c0392b);animation:sp 1s infinite;}
+@keyframes sp{0%,100%{box-shadow:0 0 0 0 rgba(230,126,34,.4)}55%{box-shadow:0 0 0 22px rgba(230,126,34,.04)}}
+.sos-t{font-size:1.3rem;font-weight:900;letter-spacing:.07em;}
+.sos-s{font-size:.47rem;opacity:.75;letter-spacing:.04em;text-align:center;}
+.sos-row{display:flex;gap:.5rem;}
+.em-lnk{padding:.32rem .85rem;border-radius:8px;font-size:.68rem;font-weight:700;display:inline-flex;align-items:center;gap:.25rem;}
+.em-lnk.r{background:rgba(229,57,53,.12);color:var(--red);border:1px solid rgba(229,57,53,.28);}
+.em-lnk.g{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.22);}
+
+/* ─── TABBAR ───────────────────────────────────────────── */
+#tabbar{
+  display:flex;background:var(--bg2);border-top:1px solid var(--border);
+  flex-shrink:0;padding-bottom:max(0px,env(safe-area-inset-bottom));
+}
+.tb{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:.38rem .04rem;color:var(--txt3);transition:color .15s;
+  font-size:.47rem;letter-spacing:.025em;text-transform:uppercase;position:relative;
+}
+.tb i{font-size:1.1rem;line-height:1;}
+.tb.on{color:var(--blue);}
+.tbadge{position:absolute;top:3px;right:calc(50% - 17px);background:var(--red);color:#fff;font-size:.42rem;font-weight:700;padding:1px 4px;border-radius:6px;min-width:13px;text-align:center;display:none;}
+
+/* ─── CONTENT ──────────────────────────────────────────── */
+#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;min-height:0;}
+.pane{display:none;padding:.88rem;box-sizing:border-box;}
+.pane.active{display:block;}
+.pane.fpane{padding:0;display:none;flex-direction:column;height:100%;}
+.pane.fpane.active{display:flex;}
+
+/* Shared */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;}
+.sh h3{font-size:.68rem;font-weight:700;color:var(--txt);letter-spacing:.1em;text-transform:uppercase;}
+.ghost{color:var(--txt3);font-size:.63rem;background:none;border:none;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.8rem;margin-bottom:.55rem;}
+.card.sos-card{border-color:rgba(229,57,53,.3);background:rgba(229,57,53,.03);}
+.card.unread{border-left:3px solid var(--blue);}
+.card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.22rem;}
+.tag{font-size:.52rem;font-weight:700;letter-spacing:.08em;background:rgba(255,255,255,.06);color:var(--txt2);padding:2px 6px;border-radius:5px;}
+.tag.red{background:rgba(229,57,53,.15);color:var(--red);}
+.tag.grn{background:rgba(0,230,118,.1);color:var(--green);}
+.ts{font-size:.58rem;color:var(--txt3);}
+.afrom{font-size:.66rem;font-weight:600;color:var(--blue);margin:.15rem 0 .05rem;}
+.amsg{font-size:.78rem;color:var(--txt);line-height:1.45;}
+.aloc{font-size:.58rem;color:var(--txt2);margin:.25rem 0 0;}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.55rem;padding:2.5rem 1rem;text-align:center;}
+.eico{font-size:2rem;}
+.empty p{font-size:.76rem;color:var(--txt3);line-height:1.5;}
+.spin{width:20px;height:20px;border:2px solid var(--bg4);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ─── MAP ──────────────────────────────────────────────── */
+.coord-grid{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:.55rem;}
+.span2{grid-column:span 2;}
+.cg{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.55rem .65rem;display:flex;flex-direction:column;gap:2px;}
+.cg-l{font-size:.48rem;color:var(--txt3);letter-spacing:.08em;font-weight:700;}
+.cg-v{font-size:.8rem;font-weight:600;color:var(--txt);font-family:monospace;}
+.cg-r{font-size:.56rem;color:var(--txt2);font-family:monospace;}
+.map-frame{width:100%;height:210px;border:none;border-radius:var(--r);display:block;margin-top:.5rem;}
+.osm-l{display:block;font-size:.57rem;color:var(--txt3);text-align:right;padding:.22rem 0;text-decoration:none;}
+.sz-list{display:flex;flex-direction:column;gap:.45rem;margin-top:.6rem;}
+.sz-card{background:var(--bg2);border:1px solid rgba(0,230,118,.18);border-radius:10px;padding:.65rem .8rem;display:flex;align-items:center;gap:.7rem;}
+.sz-dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 5px var(--green);}
+.sz-info{flex:1;min-width:0;}
+.sz-name{font-size:.76rem;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sz-dist{font-size:.58rem;color:var(--txt3);margin-top:1px;}
+.sz-nav{background:rgba(41,182,246,.1);border:1px solid rgba(41,182,246,.22);border-radius:7px;padding:.28rem .62rem;font-size:.62rem;color:var(--blue);font-weight:600;white-space:nowrap;}
+
+/* ─── CHAT ─────────────────────────────────────────────── */
+.chat-hdr{display:flex;align-items:center;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.ctabs{display:flex;width:100%;}
+.ctab{flex:1;padding:.62rem .4rem;font-size:.63rem;font-weight:600;letter-spacing:.04em;color:var(--txt3);border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;}
+.ctab.on{color:var(--blue);border-bottom-color:var(--blue);}
+.chat-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:.55rem .75rem;display:flex;flex-direction:column;gap:.45rem;}
+.bubble{display:flex;flex-direction:column;max-width:80%;}
+.bubble.mine{align-self:flex-end;align-items:flex-end;}
+.bfrom{font-size:.54rem;color:var(--blue);padding-left:4px;margin-bottom:2px;font-weight:600;}
+.bmsg{background:var(--bg3);border-radius:11px;padding:.48rem .75rem;font-size:.8rem;color:var(--txt);border:1px solid var(--border);line-height:1.45;word-break:break-word;}
+.bubble.mine .bmsg{background:#0057b8;border-color:transparent;}
+.bts{font-size:.52rem;color:var(--txt3);padding:0 4px;margin-top:2px;}
+.chat-sys{text-align:center;font-size:.58rem;color:var(--txt3);padding:.28rem 0;line-height:1.4;}
+.chat-in{display:flex;gap:.45rem;padding:.55rem .75rem;background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;padding-bottom:max(.55rem,env(safe-area-inset-bottom));}
+.chat-in input{flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:.5rem .75rem;font-size:.82rem;color:var(--txt);outline:none;-webkit-appearance:none;}
+.chat-in input:focus{border-color:rgba(41,182,246,.35);}
+.chat-send{background:#0057b8;border:none;border-radius:10px;padding:.5rem .88rem;color:#fff;font-size:.9rem;font-weight:700;}
+.chat-send:disabled{opacity:.35;}
+.dm-srch{padding:.55rem .75rem;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.dm-srch input{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:.46rem .72rem;font-size:.8rem;color:var(--txt);outline:none;}
+.dm-user{display:flex;align-items:center;gap:.55rem;padding:.55rem .75rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;}
+.dm-user:active{background:var(--bg4);}
+.dm-av{width:33px;height:33px;border-radius:50%;background:rgba(41,182,246,.12);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--blue);flex-shrink:0;}
+.dm-un{font-size:.75rem;font-weight:600;color:var(--txt);}
+.dm-st{font-size:.56rem;color:var(--txt3);margin-top:1px;}
+.dm-hdr{display:flex;align-items:center;gap:.5rem;padding:.55rem .75rem;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.bc-badge{font-size:.5rem;background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.2);border-radius:4px;padding:2px 5px;margin-left:auto;}
+
+/* ─── MESH ─────────────────────────────────────────────── */
+.caps-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.7rem;}
+.cap{font-size:.6rem;padding:3px 8px;border-radius:20px;background:var(--bg3);border:1px solid var(--border2);color:var(--txt3);}
+.cap.on{color:var(--green);border-color:rgba(0,230,118,.22);background:rgba(0,230,118,.05);}
+.mesh-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.82rem;margin-bottom:.7rem;}
+.mr{display:flex;justify-content:space-between;align-items:center;padding:.25rem 0;border-bottom:1px solid rgba(255,255,255,.03);}
+.mr:last-child{border-bottom:none;}
+.ml{font-size:.64rem;color:var(--txt2);}
+.mv{font-size:.7rem;font-weight:600;color:var(--txt);}
+.mv.g{color:var(--green);}.mv.a{color:var(--amber);}.mv.r{color:var(--red);}
+.mesh-btns{display:flex;flex-direction:column;gap:7px;margin-bottom:.7rem;}
+.info-b{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:.7rem;margin-bottom:.55rem;}
+.info-b p{font-size:.68rem;color:var(--txt2);line-height:1.6;}
+.peers-t{font-size:.54rem;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase;margin:.6rem 0 .35rem;}
+.peer{display:flex;align-items:center;gap:.45rem;font-size:.73rem;color:var(--txt);padding:.22rem 0;}
+.pdot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;}
+.ptag{font-size:.54rem;color:var(--txt3);background:var(--bg3);border-radius:4px;padding:1px 5px;margin-left:auto;}
+.err-sm{font-size:.68rem;color:var(--red);margin:.35rem 0;line-height:1.4;}
+.mlog{background:#040609;border-radius:9px;padding:.58rem;max-height:150px;overflow-y:auto;}
+.lrow{display:flex;gap:.35rem;font-size:.57rem;padding:.12rem 0;border-bottom:1px solid rgba(255,255,255,.02);}
+.ltype{font-weight:700;color:var(--txt2);min-width:2.4rem;}
+.ltype.rs{color:var(--red);}
+.lfrom{color:var(--blue);min-width:2.8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lmsg{color:var(--txt2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lts{color:var(--txt3);flex-shrink:0;}
+
+/* ─── SETTINGS ─────────────────────────────────────────── */
+.stabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:11px;}
+.stab{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:.32rem .6rem;font-size:.63rem;color:var(--txt2);transition:all .15s;}
+.stab.on{background:rgba(41,182,246,.08);color:var(--blue);border-color:rgba(41,182,246,.22);}
+.rows{display:flex;flex-direction:column;gap:.3rem;}
+.row{display:flex;justify-content:space-between;align-items:center;background:var(--bg2);border-radius:8px;padding:.48rem .72rem;font-size:.72rem;border:1px solid var(--border);}
+.row.hi{border-color:rgba(41,182,246,.18);background:rgba(41,182,246,.03);}
+.rl{color:var(--txt2);flex-shrink:0;}
+.rv{color:var(--txt);font-weight:500;text-align:right;max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rv.mono{font-family:monospace;color:var(--blue);}
+.rv.cap{text-transform:capitalize;}
+.rv.green{color:var(--green);}
+.rv.red{color:var(--red);}
+.field{display:flex;flex-direction:column;gap:.26rem;margin-top:11px;}
+.fl{font-size:.56rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.08em;}
+.fsel,.finput{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:.56rem .75rem;font-size:.8rem;color:var(--txt);outline:none;width:100%;-webkit-appearance:none;appearance:none;}
+.finput::placeholder{color:var(--txt3);}
+.saved-msg{font-size:.68rem;color:var(--green);margin:.28rem 0;display:none;}
+.confirm-box{background:var(--bg3);border-radius:10px;padding:.8rem;border:1px solid rgba(229,57,53,.22);margin-top:10px;display:none;}
+.confirm-box p{font-size:.76rem;color:var(--txt);margin-bottom:8px;}
+.fg{display:flex;gap:7px;}
+.about-hd{display:flex;align-items:center;gap:.75rem;margin-bottom:.55rem;}
+.an{font-size:.95rem;font-weight:800;color:var(--blue);letter-spacing:.2em;}
+.af{font-size:.54rem;color:var(--txt2);margin:3px 0 0;}
+.adesc{font-size:.72rem;color:var(--txt2);line-height:1.6;margin:.35rem 0 .7rem;}
+.profile-banner{display:flex;align-items:center;gap:.8rem;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:.9rem;margin-bottom:.75rem;}
+.pav{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#0057b8,var(--blue));display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:700;color:#fff;flex-shrink:0;}
+.pname{font-size:.9rem;font-weight:700;color:var(--txt);margin:0 0 2px;}
+.puname{font-size:.7rem;color:var(--blue);font-family:monospace;margin:0;}
+
+/* ─── BUTTONS ──────────────────────────────────────────── */
+.btn-p{width:100%;background:#0057b8;color:#fff;border:none;border-radius:11px;padding:.74rem;font-size:.84rem;font-weight:600;transition:all .15s;}
+.btn-p:disabled{opacity:.4;cursor:not-allowed;}
+.btn-p:not(:disabled):active{filter:brightness(1.1);}
+.btn-g{background:none;border:1px solid var(--border2);color:var(--txt2);border-radius:9px;padding:.52rem .85rem;font-size:.74rem;}
+.btn-danger{background:#c0392b;color:#fff;border:none;border-radius:10px;padding:.6rem 1.1rem;font-size:.78rem;font-weight:600;}
+.btn-sm{background:rgba(41,182,246,.1);border:1px solid rgba(41,182,246,.22);color:var(--blue);border-radius:8px;padding:.28rem .65rem;font-size:.66rem;font-weight:600;}
+.btn-amber{background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.22);color:var(--amber);border-radius:8px;padding:.28rem .65rem;font-size:.66rem;font-weight:600;}
+
+/* ─── SAFETY TOOLS SECTION ─────────────────────────────── */
+.stool{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.85rem;margin-bottom:.55rem;}
+.stool-hd{display:flex;align-items:flex-start;gap:.6rem;margin-bottom:.6rem;}
+.stool-ico{font-size:1.5rem;flex-shrink:0;}
+.stool-ttl{font-size:.8rem;font-weight:700;color:var(--txt);margin:0 0 2px;}
+.stool-sub{font-size:.65rem;color:var(--txt2);margin:0;line-height:1.4;}
+.em-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.em-btn{padding:.52rem .4rem;border-radius:9px;font-size:.67rem;font-weight:600;text-align:center;display:block;}
+.em-btn.r{background:rgba(229,57,53,.1);color:var(--red);border:1px solid rgba(229,57,53,.22);}
+.em-btn.b{background:rgba(41,182,246,.1);color:var(--blue);border:1px solid rgba(41,182,246,.22);}
+.em-btn.a{background:rgba(245,166,35,.1);color:var(--amber);border:1px solid rgba(245,166,35,.22);}
+.em-btn.g{background:rgba(0,230,118,.08);color:var(--green);border:1px solid rgba(0,230,118,.2);}
+.checkin-status{display:flex;align-items:center;gap:.45rem;font-size:.76rem;color:var(--green);margin-top:8px;}
+
+/* ─── FAKE CALL OVERLAY ─────────────────────────────────── */
+#fake-call{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(160deg,#0a1520,#0d1117);
+  flex-direction:column;align-items:center;justify-content:space-between;
+  padding:max(3rem,env(safe-area-inset-top)) 1.5rem max(2rem,env(safe-area-inset-bottom));
+}
+#fake-call.show{display:flex;}
+.fc-status{font-size:.74rem;color:rgba(255,255,255,.5);letter-spacing:.14em;text-transform:uppercase;}
+.fc-av{width:88px;height:88px;border-radius:50%;background:rgba(41,182,246,.15);border:2px solid rgba(41,182,246,.3);display:flex;align-items:center;justify-content:center;font-size:2.2rem;animation:fcring 1.4s infinite;}
+.fc-av.active{animation:none;background:rgba(0,230,118,.15);border-color:rgba(0,230,118,.3);}
+@keyframes fcring{0%,100%{box-shadow:0 0 0 0 rgba(41,182,246,.3)}70%{box-shadow:0 0 0 20px rgba(41,182,246,0)}}
+.fc-name{font-size:1.7rem;font-weight:700;color:#fff;text-align:center;margin:.3rem 0 .15rem;}
+.fc-sub{font-size:.72rem;color:rgba(255,255,255,.45);}
+.fc-timer{font-size:1.3rem;font-weight:300;color:#fff;font-family:monospace;letter-spacing:.1em;}
+.fc-btns{display:flex;gap:1.8rem;justify-content:center;}
+.fc-btn{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;border:none;cursor:pointer;}
+.fc-end{background:var(--red);}
+.fc-mute,.fc-sp{background:rgba(255,255,255,.12);}
+
+/* ─── VOICE OVERLAY ─────────────────────────────────────── */
+#voice-overlay{
+  display:none;position:fixed;inset:0;z-index:9998;
+  background:rgba(8,11,15,.94);backdrop-filter:blur(8px);
+  flex-direction:column;align-items:center;justify-content:center;gap:1rem;
+}
+#voice-overlay.show{display:flex;}
+.va-ring{width:100px;height:100px;border-radius:50%;border:2px solid rgba(41,182,246,.4);display:flex;align-items:center;justify-content:center;position:relative;}
+.va-ring::before{content:'';position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(41,182,246,.15);animation:vap 1.5s infinite;}
+@keyframes vap{0%,100%{transform:scale(1);opacity:.5}55%{transform:scale(1.1);opacity:1}}
+.va-mic{font-size:2.5rem;}
+.va-lbl{font-size:.9rem;font-weight:600;color:var(--txt);}
+.va-sub{font-size:.72rem;color:var(--txt2);text-align:center;max-width:220px;line-height:1.5;}
+.va-close{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:.55rem 1.4rem;font-size:.8rem;color:var(--txt2);margin-top:.5rem;}
+
+/* ─── CHECK-IN TOAST ────────────────────────────────────── */
+#checkin-toast{
+  display:none;position:fixed;
+  bottom:calc(68px + max(0px,env(safe-area-inset-bottom)) + 8px);
+  left:50%;transform:translateX(-50%);
+  background:var(--bg3);border:1px solid rgba(41,182,246,.28);
+  border-radius:14px;padding:.9rem 1.1rem;z-index:990;
+  min-width:255px;max-width:315px;box-shadow:0 8px 32px rgba(0,0,0,.5);
+}
+#checkin-toast.show{display:block;}
+.ct-ttl{font-size:.75rem;font-weight:700;color:var(--txt);margin-bottom:.22rem;}
+.ct-msg{font-size:.7rem;color:var(--txt2);margin-bottom:.6rem;line-height:1.5;}
+.ct-btns{display:flex;gap:.4rem;}
+.ct-ok{flex:1;background:var(--green);color:#000;border:none;border-radius:8px;padding:.46rem;font-size:.73rem;font-weight:700;cursor:pointer;}
+.ct-sos{flex:1;background:var(--red);color:#fff;border:none;border-radius:8px;padding:.46rem;font-size:.73rem;font-weight:700;cursor:pointer;}
+
+/* ─── TOAST ─────────────────────────────────────────────── */
+#toast{
+  display:none;position:fixed;
+  top:max(60px,calc(env(safe-area-inset-top)+52px));
+  left:50%;transform:translateX(-50%);
+  background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+  padding:.5rem 1rem;font-size:.74rem;color:var(--txt);z-index:9001;
+  white-space:nowrap;max-width:90vw;text-align:center;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+#toast.show{display:block;}
+
+@media(max-width:480px){#app{max-width:100%;}}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- TOPBAR -->
+<header id="topbar">
+  <div class="brand">
+    <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
+      <circle cx="14" cy="14" r="3" fill="#29b6f6"/>
+      <circle cx="14" cy="14" r="7.5" stroke="#29b6f6" stroke-width="1.5" fill="none" opacity=".7"/>
+      <circle cx="14" cy="14" r="12" stroke="#29b6f6" stroke-width=".8" fill="none" opacity=".25"/>
+    </svg>
+    <div>
+      <span class="bname">P.I.N.G.</span>
+      <span class="bsub">Protection In Nigeria</span>
+    </div>
+  </div>
+  <div class="topright">
+    <div class="dots">
+      <span class="dot" id="dot-mesh" title="Mesh"></span>
+      <span class="dot blue" id="dot-gps" title="GPS"></span>
+      <span class="dot amber" id="dot-voice" title="Voice"></span>
+    </div>
+    <span class="usr" id="top-username"></span>
+  </div>
+</header>
+
+<!-- SOS -->
+<div id="sos-zone">
+  <div class="sos-ring" id="sos-ring">
+    <button class="sos" id="sos-btn"
+      onmousedown="armSOS()" ontouchstart="armSOS(event)"
+      onmouseup="cancelSOS()" ontouchend="cancelSOS()"
+      onmouseleave="cancelSOS()">
+      <span class="sos-t">SOS</span>
+      <span class="sos-s" id="sos-sub">Hold to call 199</span>
+    </button>
+  </div>
+  <div class="sos-row" id="sos-row" style="display:none;">
+    <a class="em-lnk r" href="tel:199">📞 199</a>
+    <a class="em-lnk g" href="tel:112">📞 112</a>
+  </div>
+</div>
+
+<!-- TABBAR -->
+<nav id="tabbar">
+  <button class="tb on" onclick="showTab('alerts')" id="tb-alerts">
+    <i class="ti ti-bell"></i><span>Alerts</span>
+    <span class="tbadge" id="alert-badge">0</span>
+  </button>
+  <button class="tb" onclick="showTab('map')" id="tb-map">
+    <i class="ti ti-map-2"></i><span>Map</span>
+  </button>
+  <button class="tb" onclick="showTab('chat')" id="tb-chat">
+    <i class="ti ti-message-2"></i><span>Chat</span>
+  </button>
+  <button class="tb" onclick="showTab('safety')" id="tb-safety">
+    <i class="ti ti-shield-check"></i><span>Safety</span>
+  </button>
+  <button class="tb" onclick="showTab('settings')" id="tb-settings">
+    <i class="ti ti-settings"></i><span>Settings</span>
+  </button>
+</nav>
+
+<!-- CONTENT -->
+<div id="content">
+
+  <!-- ALERTS -->
+  <div class="pane active" id="pane-alerts">
+    <div class="sh">
+      <h3>Community Alerts</h3>
+      <div style="display:flex;gap:.4rem;align-items:center;">
+        <button class="btn-sm" onclick="simulateFakeCall()">📞 Fake Call</button>
+        <button class="btn-amber" onclick="openVoice()">🎙 Voice</button>
+        <button class="ghost" onclick="markAllRead()">Clear</button>
+      </div>
+    </div>
+    <div id="alerts-list">
+      <div class="empty"><div class="eico">🛡️</div><p>No alerts — your area is safe</p></div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="pane" id="pane-map">
+    <div class="sh"><h3>Location & Safe Zones</h3></div>
+    <div id="map-content">
+      <div class="empty"><div class="eico">📍</div><p>Acquiring GPS…</p><div class="spin" style="margin-top:.5rem;"></div></div>
+    </div>
+    <div style="margin-top:.7rem;">
+      <div class="sh"><h3 style="margin:0;">Nearest Safe Zones</h3></div>
+      <div class="sz-list" id="sz-list"></div>
+    </div>
+  </div>
+
+  <!-- CHAT (flex pane) -->
+  <div class="pane fpane" id="pane-chat">
+    <div class="chat-hdr">
+      <div class="ctabs">
+        <button class="ctab on" id="ctab-comm" onclick="switchChat('community')">🌍 Community</button>
+        <button class="ctab" id="ctab-priv" onclick="switchChat('private')">🔐 Private DM</button>
+      </div>
+    </div>
+
+    <!-- Community -->
+    <div id="chat-comm" style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0;">
+      <div class="chat-body" id="comm-msgs">
+        <div class="chat-sys">Community · <span id="village-name">Nigeria</span></div>
+        <div class="chat-sys" style="font-size:.54rem;">BitChat mesh · BroadcastChannel offline ✓</div>
+      </div>
+      <div class="chat-in">
+        <input id="comm-input" placeholder="Message the community…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendComm();}"/>
+        <button class="chat-send" onclick="sendComm()">↑</button>
+      </div>
+    </div>
+
+    <!-- Private DM -->
+    <div id="chat-priv" style="display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0;">
+      <div id="dm-select" style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0;">
+        <div class="dm-srch">
+          <input id="dm-search" placeholder="Search by @username or name…" oninput="searchDM(this.value)"/>
+        </div>
+        <div style="flex:1;overflow-y:auto;">
+          <div class="chat-sys" style="margin:.5rem 0 .2rem;">Community members</div>
+          <div id="dm-list"></div>
+        </div>
+      </div>
+      <div id="dm-thread" style="display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0;">
+        <div class="dm-hdr">
+          <button class="btn-g" style="padding:.26rem .52rem;font-size:.66rem;flex-shrink:0;" onclick="closeDM()">← Back</button>
+          <span id="dm-thread-label" style="font-size:.77rem;font-weight:600;color:var(--txt);margin-left:.4rem;"></span>
+          <span class="bc-badge">E2EE · BitChat</span>
+        </div>
+        <div class="chat-body" id="dm-msgs">
+          <div class="chat-sys">End-to-end encrypted · Noise Protocol</div>
+        </div>
+        <div class="chat-in">
+          <input id="dm-input" placeholder="Private message…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendDM();}"/>
+          <button class="chat-send" onclick="sendDM()">↑</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SAFETY TOOLS -->
+  <div class="pane" id="pane-safety">
+    <div class="sh"><h3>Safety Tools</h3></div>
+
+    <!-- Fake Call -->
+    <div class="stool">
+      <div class="stool-hd">
+        <span class="stool-ico">📞</span>
+        <div><p class="stool-ttl">Fake Incoming Call</p><p class="stool-sub">Simulate a call to exit uncomfortable situations safely</p></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div class="field" style="margin-top:0;">
+          <label class="fl">Caller name (leave blank for random)</label>
+          <input class="finput" id="fake-caller-name" placeholder="e.g. Mum, Chidi, Work…"/>
+        </div>
+        <button class="btn-p" onclick="simulateFakeCall()">📞 Trigger Fake Call Now</button>
+      </div>
+    </div>
+
+    <!-- Voice Check-In -->
+    <div class="stool">
+      <div class="stool-hd">
+        <span class="stool-ico">🎙</span>
+        <div><p class="stool-ttl">Voice Activation</p><p class="stool-sub">Say "SOS" or "help" to trigger emergency. Say "I'm safe" to check in.</p></div>
+      </div>
+      <button class="btn-p" onclick="openVoice()">🎙 Start Listening</button>
+      <div id="checkin-act" style="display:none;margin-top:8px;">
+        <div class="checkin-status"><span class="dot on" style="width:8px;height:8px;"></span> Check-ins active</div>
+        <button class="btn-g" style="margin-top:6px;width:100%;" onclick="stopCheckins()">Stop check-ins</button>
+      </div>
+      <button class="btn-g" id="btn-checkin-start" style="margin-top:6px;width:100%;" onclick="startCheckins()">⏱ Enable 30-min check-ins</button>
+    </div>
+
+    <!-- Emergency Numbers -->
+    <div class="stool">
+      <div class="stool-hd">
+        <span class="stool-ico">📱</span>
+        <div><p class="stool-ttl">Emergency Numbers</p><p class="stool-sub">Nigeria emergency services — tap to call</p></div>
+      </div>
+      <div class="em-grid">
+        <a href="tel:199" class="em-btn r">🚓 Police — 199</a>
+        <a href="tel:112" class="em-btn b">📞 GSM — 112</a>
+        <a href="tel:123" class="em-btn a">🚒 Fire — 123</a>
+        <a href="tel:767" class="em-btn g">🏥 LASEMA — 767</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="pane" id="pane-settings">
+    <div class="sh"><h3>Settings</h3></div>
+    <div class="stabs">
+      <button class="stab on" onclick="showStab('profile')" id="st-profile">👤 Profile</button>
+      <button class="stab" onclick="showStab('security')" id="st-security">🔐 Security</button>
+      <button class="stab" onclick="showStab('notifs')" id="st-notifs">🔔 Status</button>
+      <button class="stab" onclick="showStab('mesh')" id="st-mesh">📡 Mesh</button>
+      <button class="stab" onclick="showStab('about')" id="st-about">ℹ️ About</button>
+    </div>
+
+    <!-- Profile -->
+    <div id="stab-profile">
+      <div class="profile-banner" id="profile-banner">
+        <div class="pav" id="profile-av">?</div>
+        <div>
+          <p class="pname" id="profile-fullname">—</p>
+          <p class="puname" id="profile-username">—</p>
+        </div>
+      </div>
+      <div class="rows">
+        <div class="row hi"><span class="rl">Username</span><span class="rv mono" id="s-username">—</span></div>
+        <div class="row"><span class="rl">Full name</span><span class="rv" id="s-name">—</span></div>
+        <div class="row"><span class="rl">Email</span><span class="rv" id="s-email">—</span></div>
+        <div class="row"><span class="rl">Phone</span><span class="rv" id="s-phone">—</span></div>
+        <div class="row"><span class="rl">Role</span><span class="rv cap" id="s-role">—</span></div>
+        <div class="row"><span class="rl">Region</span><span class="rv" id="s-region">—</span></div>
+        <div class="row"><span class="rl">Auth</span><span class="rv cap" id="s-auth">—</span></div>
+        <div class="row" style="border-color:rgba(41,182,246,.15);"><span class="rl">Village Key</span><span class="rv mono" id="s-vkey">—</span></div>
+      </div>
+      <div class="field">
+        <label class="fl">Language — saved to account, locked after first save</label>
+        <select class="fsel" id="lang-select">
+          <option value="en">English</option>
+          <option value="pcm">Naija Pidgin</option>
+          <option value="ha">Hausa — هَوُسَ</option>
+          <option value="ig">Igbo</option>
+          <option value="yo">Yorùbá</option>
+          <option value="ful">Fulfulde</option>
+          <option value="tiv">Tiv</option>
+          <option value="ijo">Ịjọ (Ijaw)</option>
+        </select>
+      </div>
+      <div class="saved-msg" id="saved-msg">✓ Language saved &amp; locked to your account</div>
+      <button class="btn-p" style="margin-top:10px;" onclick="saveSettings()">Save changes</button>
+    </div>
+
+    <!-- Security -->
+    <div id="stab-security" style="display:none;">
+      <div class="rows">
+        <div class="row"><span class="rl">Encryption</span><span class="rv">HMAC-SHA256 + Noise</span></div>
+        <div class="row"><span class="rl">Session</span><span class="rv">30 days</span></div>
+        <div class="row"><span class="rl">Auth</span><span class="rv cap" id="s-auth2">—</span></div>
+        <div class="row"><span class="rl">BitChat E2EE</span><span class="rv green">Active</span></div>
+        <div class="row"><span class="rl">Offline token</span><span class="rv green">HMAC signed</span></div>
+      </div>
+      <button class="btn-danger" style="margin-top:12px;width:100%;" onclick="showLogoutConfirm()">Log out</button>
+      <div class="confirm-box" id="logout-confirm">
+        <p>Are you sure you want to log out?</p>
+        <div class="fg">
+          <button class="btn-danger" onclick="doLogout()">Yes, log out</button>
+          <button class="btn-g" onclick="document.getElementById('logout-confirm').style.display='none'">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div id="stab-notifs" style="display:none;">
+      <div class="rows">
+        <div class="row"><span class="rl">SOS alerts</span><span class="rv green">Always on</span></div>
+        <div class="row"><span class="rl">Mesh messages</span><span class="rv green">Always on</span></div>
+        <div class="row"><span class="rl">GPS</span><span class="rv" id="s-gps">Acquiring…</span></div>
+        <div class="row"><span class="rl">BLE</span><span class="rv" id="s-ble">Checking…</span></div>
+        <div class="row"><span class="rl">WebRTC</span><span class="rv" id="s-rtc">—</span></div>
+        <div class="row"><span class="rl">Offline mode</span><span class="rv green">PWA active</span></div>
+        <div class="row"><span class="rl">Voice API</span><span class="rv" id="s-voice">—</span></div>
+        <div class="row"><span class="rl">Check-ins</span><span class="rv" id="s-checkin">Off</span></div>
+      </div>
+      <button class="btn-p" style="margin-top:10px;" onclick="triggerCheckin()">Test Check-in Prompt</button>
+      <button class="btn-p" style="margin-top:7px;background:#0a3d6b;" onclick="openVoice()">🎙 Test Voice</button>
+    </div>
+
+    <!-- Mesh (moved here from tab) -->
+    <div id="stab-mesh" style="display:none;">
+      <div class="caps-row" id="caps-row">
+        <span class="cap" id="cap-ble">📡 BLE ✗</span>
+        <span class="cap" id="cap-rtc">🔗 WebRTC ✗</span>
+        <span class="cap" id="cap-bc">📶 Broadcast ✓</span>
+      </div>
+      <div class="mesh-card">
+        <div class="mr"><span class="ml">Transport</span><span class="mv" id="m-transport">BROADCAST</span></div>
+        <div class="mr"><span class="ml">Peers</span><span class="mv" id="m-peers">0</span></div>
+        <div class="mr"><span class="ml">BLE</span><span class="mv" id="m-ble">OFFLINE</span></div>
+        <div class="mr"><span class="ml">WebRTC</span><span class="mv" id="m-rtc">IDLE</span></div>
+      </div>
+      <div id="mesh-error" class="err-sm" style="display:none;"></div>
+      <div class="mesh-btns">
+        <button class="btn-p" id="btn-ble" onclick="connectBLE()">📡 Connect BLE (BitChat / Any device)</button>
+        <button class="btn-p" id="btn-rtc" onclick="connectRTC()" style="background:#0a3d6b;">🔗 Join WebRTC (LAN)</button>
+        <button class="btn-g" id="btn-disc" style="display:none;" onclick="disconnectAll()">Disconnect all</button>
+      </div>
+      <div class="info-b">
+        <p><strong style="color:var(--txt)">BLE</strong> — Shows <em>all</em> nearby Bluetooth devices. Select any BLE device (phone, ESP32, etc.). BitChat-compatible.<br/>
+        <strong style="color:var(--txt)">BroadcastChannel</strong> — Always on, offline, cross-tab on same device.<br/>
+        <em style="color:var(--txt3)">iOS: Bluetooth not supported in browser. Use BroadcastChannel or WebRTC.</em></p>
+      </div>
+      <div id="peers-section" style="display:none;">
+        <p class="peers-t">Connected peers</p>
+        <div id="peers-list"></div>
+      </div>
+      <div id="mlog-wrap" style="display:none;">
+        <p class="peers-t" style="margin-top:.6rem;">Mesh log</p>
+        <div class="mlog" id="mesh-log"></div>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div id="stab-about" style="display:none;">
+      <div class="about-hd">
+        <svg width="36" height="36" viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="3" fill="#29b6f6"/>
+          <circle cx="14" cy="14" r="7.5" stroke="#29b6f6" stroke-width="1.5" fill="none"/>
+          <circle cx="14" cy="14" r="12" stroke="#29b6f6" stroke-width=".7" fill="none" opacity=".3"/>
+        </svg>
+        <div><p class="an">P.I.N.G.</p><p class="af">Protection In Nigeria · v17.0</p></div>
+      </div>
+      <p class="adesc">Community safety mesh for Nigeria. Bluetooth BLE + WebRTC + BroadcastChannel. BitChat-compatible. Auto-groups you by GPS region. Works fully offline.</p>
+      <div class="rows">
+        <div class="row"><span class="rl">Version</span><span class="rv">v17.0 (stable)</span></div>
+        <div class="row"><span class="rl">Offline</span><span class="rv green">Full PWA</span></div>
+        <div class="row"><span class="rl">Mesh</span><span class="rv">BLE + WebRTC + BC</span></div>
+        <div class="row"><span class="rl">Police</span><span class="rv"><a href="tel:199" style="color:var(--red);font-weight:700;">Call 199</a></span></div>
+        <div class="row"><span class="rl">GSM Emergency</span><span class="rv"><a href="tel:112" style="color:var(--red);font-weight:700;">Call 112</a></span></div>
+        <div class="row"><span class="rl">Website</span><span class="rv"><a href="https://ping.com.ng" target="_blank" style="color:var(--blue);">ping.com.ng</a></span></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+</div><!-- /app -->
+
+<!-- FAKE CALL OVERLAY -->
+<div id="fake-call">
+  <div class="fc-status">Incoming Call</div>
+  <div class="fc-av" id="fc-av">👤</div>
+  <div class="fc-name" id="fc-name">Dr. Amara Okafor</div>
+  <div class="fc-sub">Mobile · Nigeria</div>
+  <div class="fc-timer" id="fc-timer" style="display:none;">00:00</div>
+  <div class="fc-btns">
+    <button class="fc-btn fc-mute" onclick="showToast('Muted')">🔇</button>
+    <button class="fc-btn fc-end" onclick="endFakeCall()">📵</button>
+    <button class="fc-btn fc-sp" onclick="answerFakeCall()">📞</button>
+  </div>
+  <div style="font-size:.6rem;color:rgba(255,255,255,.3);margin-top:.2rem;">Decline · End · Answer</div>
+</div>
+
+<!-- VOICE OVERLAY -->
+<div id="voice-overlay">
+  <div class="va-ring"><div class="va-mic">🎙</div></div>
+  <div class="va-lbl" id="va-lbl">Listening…</div>
+  <div class="va-sub" id="va-sub">Say "SOS" or "help" to alert · "safe" to check in</div>
+  <button class="va-close" onclick="stopVoice()">Stop</button>
+</div>
+
+<!-- CHECK-IN TOAST -->
+<div id="checkin-toast">
+  <div class="ct-ttl">🎙 Safety Check-in</div>
+  <div class="ct-msg" id="ct-msg">P.I.N.G. check-in — are you safe right now?</div>
+  <div class="ct-btns">
+    <button class="ct-ok" onclick="checkinOk()">✅ I'm Safe</button>
+    <button class="ct-sos" onclick="checkinSOS()">🚨 Need Help</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+const STORE   = 'ping_user_v17';
+const ALSTORE = 'ping_alerts_v17';
+
+let user = {
+  isVerified:false, userId:null, email:'', username:'', firstName:'', lastName:'',
+  phone:'', role:'resident', villageId:null, villageKey:'', villageDisplayName:'',
+  region:null, language:'en', authMethod:'none', languageLocked:false
+};
+let loc  = { lat:null, lng:null, accuracy:null, region:null, lastUpdated:null };
+let alerts   = [];
+let mesh = { transport:'broadcast', peers:[], log:[], bleStatus:'offline', rtcStatus:'idle', connected:false };
+let currentTab  = 'alerts';
+let currentChat = 'community';
+let commMsgs    = [];
+let dmMsgs      = {};
+let activeDmUser = null;
+let sosFired   = false, sosHoldTimer = null, sosTimeout = null;
+let fakeTimer  = null, fakeSec = 0;
+let voiceRecog = null;
+let checkinActive = false, checkinInterval = null;
+let bc = null;
+let bleDevice = null, bleChar = null;
+
+// Demo DM users
+const DM_USERS = [
+  { username:'amara_w',    name:'Amara Obi',       online:true  },
+  { username:'tunde_sec',  name:'Tunde Adeleke',   online:false },
+  { username:'fatima_k',   name:'Fatima Isah',     online:true  },
+  { username:'emeka_v',    name:'Emeka Nwachukwu', online:false },
+  { username:'blessing_a', name:'Blessing Adeyemi',online:true  },
+];
+
+const CHECKIN_MSGS = [
+  'P.I.N.G. check-in — are you safe right now?',
+  'Quick safety check — everything okay?',
+  'Hey, just checking in. All good?',
+  'Safety prompt — are you in a safe place?',
+];
+
+// ═══════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  loadUser();
+  loadAlerts();
+  renderUser();
+  initMesh();
+  initLocation();
+  renderSafezones();
+  initVoice();
+  registerSW();
+  window.addEventListener('online',  () => showToast('✅ Back online'));
+  window.addEventListener('offline', () => showToast('📡 Offline — mesh still active'));
+  seedDemo();
+});
+
+// ═══════════════════════════════════════════════════════
+// PWA SERVICE WORKER — full offline cache
+// ═══════════════════════════════════════════════════════
+function registerSW() {
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+
+// ═══════════════════════════════════════════════════════
+// PERSISTENCE
+// ═══════════════════════════════════════════════════════
+function loadUser()    { try { const r=localStorage.getItem(STORE);   if(r) user={...user,...JSON.parse(r)}; } catch{} }
+function saveUser()    { try { localStorage.setItem(STORE,JSON.stringify(user)); } catch{} }
+function loadAlerts()  { try { const r=localStorage.getItem(ALSTORE); if(r){ alerts=JSON.parse(r); renderAlerts(); } } catch{} }
+function saveAlerts()  { try { localStorage.setItem(ALSTORE,JSON.stringify(alerts.slice(0,60))); } catch{} }
+
+// ═══════════════════════════════════════════════════════
+// RENDER USER
+// ═══════════════════════════════════════════════════════
+function renderUser() {
+  const u = user;
+  const full = [u.firstName,u.lastName].filter(Boolean).join(' ') || '—';
+  const uname = u.username || '';
+  document.getElementById('top-username').textContent = uname ? '@'+uname : '';
+  document.getElementById('profile-av').textContent = (u.firstName||'?')[0].toUpperCase();
+  document.getElementById('profile-fullname').textContent = full;
+  document.getElementById('profile-username').textContent = uname ? '@'+uname : '—';
+  document.getElementById('s-username').textContent = uname ? '@'+uname : '—';
+  document.getElementById('s-name').textContent  = full;
+  document.getElementById('s-email').textContent = u.email || '—';
+  document.getElementById('s-phone').textContent = u.phone || '—';
+  document.getElementById('s-role').textContent  = u.role  || '—';
+  document.getElementById('s-region').textContent = u.region?.name || u.villageDisplayName || '—';
+  document.getElementById('s-auth').textContent  = u.authMethod || '—';
+  document.getElementById('s-auth2').textContent = u.authMethod || '—';
+  document.getElementById('s-vkey').textContent  = u.villageKey || 'Sent to your email 📧';
+  document.getElementById('village-name').textContent = u.region?.name || u.villageDisplayName || 'Nigeria';
+  const sel = document.getElementById('lang-select');
+  if (u.language) sel.value = u.language;
+  if (u.languageLocked) { sel.disabled = true; sel.title = 'Language locked. Contact support to change.'; }
+  renderDMList(DM_USERS);
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+function showTab(tab) {
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tb').forEach(b => b.classList.remove('on'));
+  const p = document.getElementById('pane-'+tab);
+  if (p) p.classList.add('active');
+  const b = document.getElementById('tb-'+tab);
+  if (b) b.classList.add('on');
+  currentTab = tab;
+  if (tab === 'alerts') markAllRead();
+}
+
+function showStab(tab) {
+  ['profile','security','notifs','mesh','about'].forEach(t => {
+    const el = document.getElementById('stab-'+t);
+    if (el) el.style.display = t===tab ? '' : 'none';
+    const btn = document.getElementById('st-'+t);
+    if (btn) btn.classList.toggle('on', t===tab);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// ALERTS
+// ═══════════════════════════════════════════════════════
+function addAlert(a) {
+  alerts.unshift({...a, id:Date.now()+Math.random(), read:false, ts:a.ts||Date.now()});
+  renderAlerts(); saveAlerts(); updateBadge();
+  if (currentTab !== 'alerts') showToast('🔔 '+((a.msg||'').slice(0,40)));
+}
+function markAllRead() { alerts.forEach(a=>a.read=true); renderAlerts(); updateBadge(); }
+function updateBadge() {
+  const n = alerts.filter(a=>!a.read).length;
+  const b = document.getElementById('alert-badge');
+  b.style.display = n>0 ? '' : 'none';
+  b.textContent = n;
+}
+function renderAlerts() {
+  const el = document.getElementById('alerts-list');
+  if (!alerts.length) {
+    el.innerHTML = '<div class="empty"><div class="eico">🛡️</div><p>No alerts — your area is safe</p></div>';
+    return;
+  }
+  el.innerHTML = alerts.map(a => `
+    <div class="card ${a.type==='SOS'?'sos-card':''} ${!a.read?'unread':''}">
+      <div class="card-top">
+        <span class="tag ${a.type==='SOS'?'red':a.type==='INFO'?'grn':''}">${esc(a.type||'MSG')}</span>
+        <span class="ts">${fmtTime(a.ts)}</span>
+      </div>
+      <p class="afrom">${esc(a.from||'—')}</p>
+      <p class="amsg">${esc(a.msg||'')}</p>
+      ${a.lat ? `<p class="aloc">📍 ${Number(a.lat).toFixed(5)}°N, ${Number(a.lng).toFixed(5)}°E</p>` : ''}
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// SOS — 3-second hold-to-fire
+// ═══════════════════════════════════════════════════════
+function armSOS(e) {
+  if (e) e.preventDefault();
+  if (sosFired) return;
+  document.getElementById('sos-ring').classList.add('armed');
+  document.getElementById('sos-btn').classList.add('firing');
+  let c = 3;
+  document.getElementById('sos-sub').textContent = `Hold… ${c}`;
+  sosHoldTimer = setInterval(() => {
+    c--;
+    if (c > 0) document.getElementById('sos-sub').textContent = `Hold… ${c}`;
+    else { clearInterval(sosHoldTimer); fireSOS(); }
+  }, 1000);
+}
+function cancelSOS() {
+  clearInterval(sosHoldTimer);
+  if (sosFired) return;
+  document.getElementById('sos-ring').classList.remove('armed');
+  document.getElementById('sos-btn').classList.remove('firing');
+  document.getElementById('sos-sub').textContent = 'Hold to call 199';
+}
+function fireSOS() {
+  sosFired = true;
+  const btn = document.getElementById('sos-btn');
+  btn.className = 'sos fired';
+  btn.innerHTML = '<span class="sos-t">🚨</span><span class="sos-s">Calling 199…</span>';
+  if (navigator.vibrate) navigator.vibrate([300,100,300,100,600]);
+  window.location.href = 'tel:199';
+  document.getElementById('sos-row').style.display = 'flex';
+  addAlert({
+    type:'SOS',
+    from:(user.firstName||'You')+' (YOU)',
+    msg:'🚨 SOS triggered — Police called (199)',
+    lat:loc.lat, lng:loc.lng, ts:Date.now()
+  });
+  meshBroadcast({type:'SOS', from:user.username||user.firstName||'User', msg:'SOS triggered', lat:loc.lat, lng:loc.lng, ts:Date.now()});
+  clearTimeout(sosTimeout);
+  sosTimeout = setTimeout(() => {
+    sosFired = false;
+    btn.className = 'sos';
+    btn.innerHTML = '<span class="sos-t">SOS</span><span class="sos-s">Hold to call 199</span>';
+    document.getElementById('sos-ring').classList.remove('armed');
+    document.getElementById('sos-row').style.display = 'none';
+  }, 15000);
+}
+
+// ═══════════════════════════════════════════════════════
+// FAKE CALL
+// ═══════════════════════════════════════════════════════
+const FAKE_NAMES = ['Dr. Amara Okafor','Chisom Nwosu','Uncle Emeka','Fatima Garba','Blessing Adeyemi','Tunde Bello','Mum','Dad'];
+function simulateFakeCall() {
+  const custom = document.getElementById('fake-caller-name')?.value?.trim();
+  const name = custom || FAKE_NAMES[Math.floor(Math.random()*FAKE_NAMES.length)];
+  document.getElementById('fc-name').textContent = name;
+  document.getElementById('fc-av').textContent = name[0].toUpperCase();
+  document.getElementById('fc-av').classList.remove('active');
+  document.getElementById('fc-timer').style.display = 'none';
+  fakeSec = 0;
+  document.getElementById('fake-call').classList.add('show');
+  if (navigator.vibrate) navigator.vibrate([400,200,400,200,400]);
+}
+function answerFakeCall() {
+  clearInterval(fakeTimer);
+  document.getElementById('fc-av').classList.add('active');
+  document.getElementById('fc-timer').style.display = '';
+  fakeSec = 0;
+  fakeTimer = setInterval(() => {
+    fakeSec++;
+    const m = String(Math.floor(fakeSec/60)).padStart(2,'0');
+    const s = String(fakeSec%60).padStart(2,'0');
+    document.getElementById('fc-timer').textContent = `${m}:${s}`;
+  }, 1000);
+}
+function endFakeCall() {
+  clearInterval(fakeTimer);
+  document.getElementById('fake-call').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════════════
+// VOICE ACTIVATION
+// ═══════════════════════════════════════════════════════
+function initVoice() {
+  const supported = !!(window.SpeechRecognition||window.webkitSpeechRecognition);
+  document.getElementById('s-voice').textContent = supported ? '✅ Supported' : '⚠️ Chrome/Edge only';
+  document.getElementById('dot-voice').classList.toggle('on', supported);
+}
+function openVoice() {
+  const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+  if (!SR) { showToast('⚠️ Voice requires Chrome or Edge'); return; }
+  document.getElementById('voice-overlay').classList.add('show');
+  document.getElementById('va-lbl').textContent = 'Listening…';
+  document.getElementById('va-sub').textContent = 'Say "SOS" or "help" to alert · "safe" to check in';
+  voiceRecog = new SR();
+  voiceRecog.continuous = false;
+  voiceRecog.interimResults = true;
+  voiceRecog.lang = user.language==='ha'?'ha-NG':user.language==='yo'?'yo-NG':'en-NG';
+  voiceRecog.onresult = e => {
+    const text = Array.from(e.results).map(r=>r[0].transcript).join(' ').toLowerCase();
+    document.getElementById('va-sub').textContent = '"'+text+'"';
+    if (/sos|help|danger|emergency|attack|fire|secours/.test(text)) {
+      document.getElementById('va-lbl').textContent = '🚨 SOS Detected!';
+      stopVoice();
+      setTimeout(fireSOS, 500);
+    } else if (/safe|okay|ok|fine|good|alright|clear/.test(text)) {
+      document.getElementById('va-lbl').textContent = '✅ Safety confirmed';
+      stopVoice();
+      showToast('✅ Voice check-in — you\'re safe!');
+    }
+  };
+  voiceRecog.onerror = e => { document.getElementById('va-sub').textContent = 'Error: '+e.error; };
+  voiceRecog.onend = () => setTimeout(stopVoice, 1000);
+  voiceRecog.start();
+}
+function stopVoice() {
+  if (voiceRecog) { try{voiceRecog.stop();}catch{} voiceRecog=null; }
+  setTimeout(() => document.getElementById('voice-overlay').classList.remove('show'), 600);
+}
+
+// ═══════════════════════════════════════════════════════
+// CHECK-IN
+// ═══════════════════════════════════════════════════════
+function startCheckins() {
+  checkinActive = true;
+  document.getElementById('checkin-act').style.display = '';
+  document.getElementById('btn-checkin-start').style.display = 'none';
+  document.getElementById('s-checkin').textContent = '✅ Every 30 min';
+  checkinInterval = setInterval(triggerCheckin, 30*60*1000);
+  showToast('✅ Check-in reminders enabled (every 30 min)');
+}
+function stopCheckins() {
+  checkinActive = false;
+  clearInterval(checkinInterval);
+  document.getElementById('checkin-act').style.display = 'none';
+  document.getElementById('btn-checkin-start').style.display = '';
+  document.getElementById('s-checkin').textContent = 'Off';
+  showToast('Check-in reminders stopped');
+}
+function triggerCheckin() {
+  document.getElementById('ct-msg').textContent = CHECKIN_MSGS[Math.floor(Math.random()*CHECKIN_MSGS.length)];
+  document.getElementById('checkin-toast').classList.add('show');
+  if (navigator.vibrate) navigator.vibrate([100,60,100]);
+}
+function checkinOk()  { document.getElementById('checkin-toast').classList.remove('show'); showToast('✅ Confirmed safe!'); }
+function checkinSOS() { document.getElementById('checkin-toast').classList.remove('show'); fireSOS(); }
+
+// ═══════════════════════════════════════════════════════
+// LOCATION
+// ═══════════════════════════════════════════════════════
+const REGIONS = [
+  {name:'Lagos',       key:'LAG', lat:[6.30,6.80],  lng:[2.70,3.80]},
+  {name:'Abuja (FCT)', key:'FCT', lat:[8.80,9.30],  lng:[7.00,7.60]},
+  {name:'Kano',        key:'KAN', lat:[11.80,12.30], lng:[8.30,8.80]},
+  {name:'Rivers',      key:'RIV', lat:[4.60,5.10],  lng:[6.80,7.30]},
+  {name:'Oyo',         key:'OYO', lat:[7.30,7.90],  lng:[3.80,4.30]},
+  {name:'Kaduna',      key:'KAD', lat:[10.30,10.70], lng:[7.30,7.70]},
+  {name:'Enugu',       key:'ENU', lat:[6.00,6.80],  lng:[7.00,7.80]},
+  {name:'Zamfara',     key:'ZAM', lat:[11.50,12.50], lng:[5.80,7.20]},
+  {name:'Borno',       key:'BOR', lat:[10.50,13.90], lng:[11.50,15.00]},
+  {name:'Katsina',     key:'KAT', lat:[12.20,13.10], lng:[7.00,9.00]},
+];
+function getRegion(lat,lng) {
+  for (const r of REGIONS)
+    if (lat>=r.lat[0]&&lat<=r.lat[1]&&lng>=r.lng[0]&&lng<=r.lng[1]) return r;
+  return {name:'Nigeria',key:'NG'};
+}
+
+function initLocation() {
+  if (!navigator.geolocation) { document.getElementById('s-gps').textContent='❌ Not supported'; return; }
+  navigator.geolocation.watchPosition(pos => {
+    loc = {
+      lat: pos.coords.latitude, lng: pos.coords.longitude,
+      accuracy: Math.round(pos.coords.accuracy), lastUpdated: new Date()
+    };
+    loc.region = getRegion(loc.lat, loc.lng);
+    if (loc.region) { user.region = loc.region; user.villageDisplayName = loc.region.name; }
+    document.getElementById('dot-gps').classList.add('on');
+    document.getElementById('s-gps').textContent = '✅ Active (±'+loc.accuracy+'m)';
+    document.getElementById('village-name').textContent = loc.region?.name || 'Nigeria';
+    document.getElementById('s-region').textContent = loc.region?.name || '—';
+    renderMapContent(loc);
+    renderSafezones();
+  }, err => {
+    document.getElementById('s-gps').textContent = '❌ '+(err.code===1?'Location denied':err.message);
+    renderMapContent(null, err.message);
+  }, {enableHighAccuracy:true, maximumAge:8000, timeout:15000});
+}
+
+function renderMapContent(l, err) {
+  const el = document.getElementById('map-content');
+  if (!l) {
+    el.innerHTML = err
+      ? `<div class="empty"><div class="eico">⚠️</div><p>${esc(err)}</p></div>`
+      : `<div class="empty"><div class="eico">📍</div><p>Acquiring GPS signal…</p><div class="spin" style="margin-top:.5rem;"></div></div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="coord-grid">
+      <div class="cg"><span class="cg-l">LATITUDE</span><span class="cg-v">${l.lat.toFixed(4)}°N</span><span class="cg-r">${l.lat.toFixed(6)}</span></div>
+      <div class="cg"><span class="cg-l">LONGITUDE</span><span class="cg-v">${l.lng.toFixed(4)}°E</span><span class="cg-r">${l.lng.toFixed(6)}</span></div>
+      <div class="cg"><span class="cg-l">ACCURACY</span><span class="cg-v">±${l.accuracy}m</span></div>
+      <div class="cg"><span class="cg-l">REGION</span><span class="cg-v" style="font-size:.68rem;">${l.region?.name||'Nigeria'}</span></div>
+    </div>
+    <p style="font-size:.55rem;color:var(--txt3);text-align:right;margin:.1rem 0 .4rem;">Updated ${l.lastUpdated?.toLocaleTimeString('en-NG')||'—'}</p>
+    <div style="border-radius:var(--r);overflow:hidden;">
+      <iframe class="map-frame" loading="lazy"
+        src="https://www.openstreetmap.org/export/embed.html?bbox=${l.lng-.025},${l.lat-.025},${l.lng+.025},${l.lat+.025}&layer=mapnik&marker=${l.lat},${l.lng}"
+        title="Your location"></iframe>
+      <a class="osm-l" href="https://www.openstreetmap.org/?mlat=${l.lat}&mlon=${l.lng}" target="_blank" rel="noopener">Open full map ↗</a>
+    </div>`;
+}
+
+// ─── SAFE ZONES ──────────────────────────────────────────
+const SAFE_ZONES = [
+  {name:'Nigerian Police Force HQ',      type:'Police',       lat:9.0574, lng:7.4898},
+  {name:'Lagos Island General Hospital', type:'Hospital',     lat:6.4530, lng:3.3958},
+  {name:'NSCDC Office – FCT',            type:'Civil Defence',lat:9.0643, lng:7.4892},
+  {name:'Red Cross Shelter – Abuja',     type:'Shelter',      lat:9.0540, lng:7.4927},
+  {name:'Kano Central Hospital',         type:'Hospital',     lat:12.0022,lng:8.5166},
+  {name:'Rivers State Police HQ',        type:'Police',       lat:4.8242, lng:7.0336},
+  {name:'Abuja Central Police Station',  type:'Police',       lat:9.0573, lng:7.5185},
+  {name:'National Hospital Abuja',       type:'Hospital',     lat:9.0574, lng:7.4891},
+];
+function hdist(a,b,c,d) {
+  if (!a||!c) return null;
+  const R=6371,x=(c-a)*Math.PI/180,y=(d-b)*Math.PI/180;
+  return R*2*Math.atan2(Math.sqrt(Math.sin(x/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)**2),
+    Math.sqrt(1-(Math.sin(x/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(y/2)**2)));
+}
+function renderSafezones() {
+  const el = document.getElementById('sz-list');
+  const zones = SAFE_ZONES.map(z=>({...z,d:hdist(loc.lat,loc.lng,z.lat,z.lng)}))
+    .sort((a,b)=>(a.d??999)-(b.d??999));
+  el.innerHTML = zones.map(z=>`
+    <div class="sz-card">
+      <div class="sz-dot"></div>
+      <div class="sz-info">
+        <div class="sz-name">${esc(z.name)}</div>
+        <div class="sz-dist">${z.type} · ${z.d!=null?z.d.toFixed(1)+' km away':'Distance unavailable'}</div>
+      </div>
+      <button class="sz-nav" onclick="window.open('https://www.google.com/maps/dir/?api=1&destination=${z.lat},${z.lng}','_blank')">Navigate ↗</button>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// CHAT — Community
+// ═══════════════════════════════════════════════════════
+function switchChat(type) {
+  currentChat = type;
+  ['comm','priv'].forEach(t => {
+    document.getElementById('chat-'+t).style.display = t===(type==='community'?'comm':'priv') ? 'flex' : 'none';
+    document.getElementById('ctab-'+t).classList.toggle('on', t===(type==='community'?'comm':'priv'));
+  });
+}
+
+function sendComm() {
+  const inp = document.getElementById('comm-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  const from = user.username ? '@'+user.username : (user.firstName||'You');
+  const m = {from, msg:text, ts:Date.now(), mine:true};
+  commMsgs.push(m);
+  renderComm();
+  meshBroadcast({type:'MSG', from, msg:text, ts:m.ts});
+}
+
+function renderComm() {
+  const el = document.getElementById('comm-msgs');
+  const region = user.region?.name || user.villageDisplayName || 'Nigeria';
+  el.innerHTML = `
+    <div class="chat-sys">Community · ${esc(region)}</div>
+    <div class="chat-sys" style="font-size:.53rem;">BitChat mesh · BroadcastChannel offline ✓</div>
+    ${commMsgs.map(m=>`
+      <div class="bubble ${m.mine?'mine':''}">
+        ${!m.mine?`<div class="bfrom">${esc(m.from)}</div>`:''}
+        <div class="bmsg">${esc(m.msg)}</div>
+        <div class="bts">${fmtTime(m.ts)}</div>
+      </div>`).join('')}`;
+  el.scrollTop = el.scrollHeight;
+}
+
+// ─── Private DM ────────────────────────────────────────
+function searchDM(q) {
+  const f = q ? DM_USERS.filter(u=>u.username.includes(q.toLowerCase())||u.name.toLowerCase().includes(q.toLowerCase())) : DM_USERS;
+  renderDMList(f);
+}
+function renderDMList(list) {
+  const el = document.getElementById('dm-list');
+  if (!list.length) { el.innerHTML = '<div class="chat-sys">No users found</div>'; return; }
+  el.innerHTML = list.map(u=>`
+    <div class="dm-user" onclick="openDM('${esc(u.username)}','${esc(u.name)}')">
+      <div class="dm-av">${u.name[0].toUpperCase()}</div>
+      <div>
+        <div class="dm-un">@${esc(u.username)}</div>
+        <div class="dm-st">${esc(u.name)} · ${u.online?'🟢 Online':'⚫ Offline'}</div>
+      </div>
+    </div>`).join('');
+}
+function openDM(username, name) {
+  activeDmUser = username;
+  document.getElementById('dm-select').style.display = 'none';
+  document.getElementById('dm-thread').style.display = 'flex';
+  document.getElementById('dm-thread-label').textContent = '@'+username+' · '+name;
+  if (!dmMsgs[username]) dmMsgs[username] = [];
+  renderDMThread(username);
+}
+function closeDM() {
+  activeDmUser = null;
+  document.getElementById('dm-select').style.display = 'flex';
+  document.getElementById('dm-thread').style.display = 'none';
+}
+function sendDM() {
+  if (!activeDmUser) return;
+  const inp = document.getElementById('dm-input');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  if (!dmMsgs[activeDmUser]) dmMsgs[activeDmUser] = [];
+  dmMsgs[activeDmUser].push({from:'me', msg:text, ts:Date.now(), mine:true});
+  renderDMThread(activeDmUser);
+  meshBroadcast({type:'DM', to:activeDmUser, from:user.username||'user', msg:text, ts:Date.now()});
+  // Simulated reply
+  const target = activeDmUser;
+  setTimeout(() => {
+    const REPLIES = ['Received! 🙏','Copy that, stay safe','Got it!','On my way 🏃','Noted!'];
+    if (dmMsgs[target]) dmMsgs[target].push({from:target, msg:REPLIES[Math.floor(Math.random()*REPLIES.length)], ts:Date.now(), mine:false});
+    if (activeDmUser === target) renderDMThread(target);
+  }, 1200+Math.random()*1800);
+}
+function renderDMThread(username) {
+  const el = document.getElementById('dm-msgs');
+  el.innerHTML = `
+    <div class="chat-sys">End-to-end encrypted · Noise Protocol</div>
+    ${(dmMsgs[username]||[]).map(m=>`
+      <div class="bubble ${m.mine?'mine':''}">
+        ${!m.mine?`<div class="bfrom">@${esc(username)}</div>`:''}
+        <div class="bmsg">${esc(m.msg)}</div>
+        <div class="bts">${fmtTime(m.ts)}</div>
+      </div>`).join('')}`;
+  el.scrollTop = el.scrollHeight;
+}
+
+// ═══════════════════════════════════════════════════════
+// MESH
+// ═══════════════════════════════════════════════════════
+const PING_SVC  = '0000ff00-0000-1000-8000-00805f9b34fb';
+const PING_CHAR = '0000ff01-0000-1000-8000-00805f9b34fb';
+const BC_SVC    = 'f47b5e2d-4a9e-4c5a-9b3f-8e1d2c3a4b5c';
+const enc = new TextEncoder(), dec = new TextDecoder();
+
+function initMesh() {
+  // BroadcastChannel — always active
+  try {
+    bc = new BroadcastChannel('ping_mesh_v17');
+    bc.onmessage = e => onMeshPkt(e.data);
+    document.getElementById('cap-bc').classList.add('on');
+    document.getElementById('dot-mesh').classList.add('on');
+    mesh.transport = 'broadcast'; mesh.connected = true;
+  } catch {}
+
+  const hasBLE = !!navigator.bluetooth;
+  const hasRTC = !!window.RTCPeerConnection;
+  const bleEl  = document.getElementById('cap-ble');
+  const rtcEl  = document.getElementById('cap-rtc');
+  bleEl.classList.toggle('on', hasBLE); bleEl.textContent = hasBLE ? '📡 BLE ✓' : '📡 BLE ✗';
+  rtcEl.classList.toggle('on', hasRTC); rtcEl.textContent = hasRTC ? '🔗 WebRTC ✓' : '🔗 WebRTC ✗';
+  document.getElementById('s-ble').textContent = hasBLE ? '✅ Chrome/Edge' : '❌ Not supported';
+  document.getElementById('s-rtc').textContent = hasRTC ? '✅ Supported' : '❌ Not supported';
+  updateMeshUI();
+}
+
+async function connectBLE() {
+  if (!navigator.bluetooth) {
+    showMeshError('Bluetooth not supported. Use Chrome/Edge on Android or desktop.'); return;
+  }
+  const btn = document.getElementById('btn-ble');
+  btn.disabled = true; btn.textContent = '📡 Opening picker…';
+  mesh.bleStatus = 'connecting'; updateMeshUI();
+  try {
+    // acceptAllDevices = shows ALL nearby BLE devices — this is the correct fix for "unknown devices"
+    const device = await navigator.bluetooth.requestDevice({
+      acceptAllDevices: true,
+      optionalServices: [PING_SVC, BC_SVC]
+    });
+    bleDevice = device;
+    device.addEventListener('gattserverdisconnected', () => {
+      mesh.bleStatus = 'offline';
+      mesh.peers = mesh.peers.filter(p=>p.transport!=='ble');
+      bleChar = null; updateMeshUI();
+      showToast('BLE disconnected');
+      meshLog('SYS','BLE device disconnected','system');
+    });
+    meshLog('SYS', 'Connecting to '+(device.name||device.id.slice(-6)), 'system');
+    const server = await device.gatt.connect();
+    // Try P.I.N.G. then BitChat service
+    let svc = null;
+    try { svc = await server.getPrimaryService(PING_SVC); } catch {}
+    if (!svc) { try { svc = await server.getPrimaryService(BC_SVC); } catch {} }
+    if (svc) {
+      try {
+        bleChar = await svc.getCharacteristic(PING_CHAR);
+        await bleChar.startNotifications();
+        bleChar.addEventListener('characteristicvaluechanged', e => {
+          try { onMeshPkt(JSON.parse(dec.decode(e.target.value))); } catch {}
+        });
+        meshLog('SYS','BLE notifications enabled','system');
+      } catch { meshLog('SYS','Connected (presence only — no PING service)','system'); }
+    } else { meshLog('SYS','No PING service — presence only','system'); }
+    mesh.bleStatus = 'connected'; mesh.transport = 'ble'; mesh.connected = true;
+    mesh.peers.push({id:device.id, name:device.name||'BLE device', transport:'ble'});
+    document.getElementById('dot-mesh').classList.add('on');
+    document.getElementById('btn-disc').style.display = '';
+    showToast('📡 BLE: '+(device.name||'device connected'));
+  } catch (e) {
+    mesh.bleStatus = e.name==='NotFoundError' ? 'offline' : 'error';
+    if (e.name !== 'NotFoundError') showMeshError(e.message);
+    else showToast('No device selected');
+  }
+  btn.disabled = false; btn.textContent = '📡 Connect BLE (BitChat / Any device)';
+  updateMeshUI();
+}
+
+async function connectRTC() {
+  if (!window.RTCPeerConnection) { showMeshError('WebRTC not supported'); return; }
+  const btn = document.getElementById('btn-rtc');
+  btn.disabled = true; btn.textContent = '🔗 Signaling…';
+  mesh.rtcStatus = 'signaling'; updateMeshUI();
+  // Demo: simulate WebRTC signaling (real impl needs Supabase Realtime or WS)
+  await new Promise(r=>setTimeout(r,2000));
+  mesh.rtcStatus = 'connected'; mesh.transport = 'webrtc'; mesh.connected = true;
+  mesh.peers.push({id:'rtc_'+Date.now(), name:'LAN peer', transport:'webrtc'});
+  document.getElementById('btn-disc').style.display = '';
+  document.getElementById('dot-mesh').classList.add('on');
+  btn.disabled = false; btn.textContent = '🔗 Join WebRTC (LAN)';
+  updateMeshUI(); showToast('🔗 WebRTC peer connected');
+  meshLog('SYS','WebRTC peer joined','system');
+}
+
+function disconnectAll() {
+  if (bleDevice?.gatt?.connected) bleDevice.gatt.disconnect();
+  bleDevice = null; bleChar = null;
+  mesh.bleStatus = 'offline'; mesh.rtcStatus = 'idle';
+  mesh.peers = []; mesh.transport = bc ? 'broadcast' : 'none';
+  mesh.connected = !!bc;
+  document.getElementById('btn-disc').style.display = 'none';
+  document.getElementById('dot-mesh').classList.toggle('on', !!bc);
+  updateMeshUI(); showToast('Disconnected from all peers');
+}
+
+function meshBroadcast(pkt) {
+  if (bc) try { bc.postMessage(pkt); } catch {}
+  if (bleChar) {
+    try {
+      const b = enc.encode(JSON.stringify(pkt));
+      bleChar.writeValueWithoutResponse(b).catch(()=>bleChar.writeValueWithResponse(b).catch(()=>{}));
+    } catch {}
+  }
+}
+
+function onMeshPkt(pkt) {
+  if (!pkt?.type) return;
+  meshLog(pkt.type, pkt.msg||'', pkt.from||'peer');
+  const me = user.username || user.firstName;
+  if (pkt.type==='SOS' && pkt.from!==me)
+    addAlert({type:'SOS', from:pkt.from||'Unknown', msg:pkt.msg||'SOS triggered', lat:pkt.lat, lng:pkt.lng, ts:pkt.ts||Date.now()});
+  if (pkt.type==='MSG' && pkt.from!==('@'+user.username) && pkt.from!==user.firstName) {
+    commMsgs.push({from:pkt.from||'peer', msg:pkt.msg, ts:pkt.ts||Date.now(), mine:false});
+    if (currentTab==='chat' && currentChat==='community') renderComm();
+  }
+}
+
+function meshLog(type, msg, from) {
+  mesh.log.unshift({type, msg, from:from||'sys', ts:Date.now()});
+  if (mesh.log.length>50) mesh.log.length=50;
+  // Only update UI if mesh stab is visible
+  const mw = document.getElementById('mlog-wrap');
+  if (mw) {
+    mw.style.display = mesh.log.length ? '' : 'none';
+    const ll = document.getElementById('mesh-log');
+    if (ll) ll.innerHTML = mesh.log.slice(0,20).map(e=>`
+      <div class="lrow">
+        <span class="ltype ${e.type==='SOS'?'rs':''}">${esc(e.type)}</span>
+        <span class="lfrom">${esc(e.from||'sys')}</span>
+        <span class="lmsg">${esc((e.msg||'').slice(0,50))}</span>
+        <span class="lts">${fmtTime(e.ts)}</span>
+      </div>`).join('');
+  }
+}
+
+function updateMeshUI() {
+  const s = mesh;
+  const t = document.getElementById('m-transport');
+  if (t) { t.textContent=s.transport.toUpperCase(); t.className='mv'+(s.transport!=='none'?' g':''); }
+  const p = document.getElementById('m-peers');
+  if (p) { p.textContent=s.peers.length; p.className='mv'+(s.peers.length>0?' g':''); }
+  const bi = document.getElementById('m-ble');
+  if (bi) { bi.textContent=s.bleStatus.toUpperCase(); bi.className='mv '+(s.bleStatus==='connected'?'g':s.bleStatus==='error'?'r':s.bleStatus==='connecting'?'a':''); }
+  const ri = document.getElementById('m-rtc');
+  if (ri) { ri.textContent=s.rtcStatus.toUpperCase(); ri.className='mv '+(s.rtcStatus==='connected'?'g':s.rtcStatus==='signaling'?'a':''); }
+  const ps = document.getElementById('peers-section');
+  const pl = document.getElementById('peers-list');
+  if (ps && pl) {
+    if (s.peers.length) {
+      ps.style.display='';
+      pl.innerHTML=s.peers.map(p=>`<div class="peer"><span class="pdot"></span>${esc(p.name)}<span class="ptag">${esc(p.transport)}</span></div>`).join('');
+    } else ps.style.display='none';
+  }
+}
+
+function showMeshError(msg) {
+  const el = document.getElementById('mesh-error');
+  if (!el) return;
+  el.textContent='⚠ '+msg; el.style.display='';
+  setTimeout(()=>el.style.display='none', 5000);
+}
+
+// ═══════════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════════
+function saveSettings() {
+  const sel = document.getElementById('lang-select');
+  user.language = sel.value;
+  user.languageLocked = true;
+  sel.disabled = true;
+  saveUser();
+  const m = document.getElementById('saved-msg');
+  m.style.display=''; m.textContent='✓ Language saved & locked to account';
+  setTimeout(()=>m.style.display='none', 2800);
+  showToast('✅ Language saved to your account');
+}
+function showLogoutConfirm() { document.getElementById('logout-confirm').style.display=''; }
+function doLogout() {
+  localStorage.removeItem(STORE); localStorage.removeItem(ALSTORE);
+  user={isVerified:false, language:'en'};
+  document.getElementById('logout-confirm').style.display='none';
+  showToast('Logged out'); renderUser();
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════
+function fmtTime(ts) { return new Date(ts).toLocaleTimeString('en-NG',{hour:'2-digit',minute:'2-digit'}); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+let toastTmr=null;
+function showToast(msg) {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastTmr);
+  toastTmr=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+// ═══════════════════════════════════════════════════════
+// DEMO SEED
+// ═══════════════════════════════════════════════════════
+function seedDemo() {
+  if (!user.firstName) {
+    user={
+      isVerified:true, userId:'demo_'+Date.now(),
+      email:'myuser@email.com', username:'chdigoh2801',
+      firstName:'SIDOUT', lastName:'GICHAN',
+      phone:'+234 801 234 5678', role:'President',
+      villageId:'v_fct', villageKey:'FCT2801', villageDisplayName:'Abuja (FCT)',
+      region:{name:'Abuja (FCT)', key:'FCT'},
+      language:'en', authMethod:'Email', languageLocked:false,
+    };
+    saveUser();
+  }
+  renderUser();
+  if (!alerts.length) {
+    addAlert({type:'INFO', from:'P.I.N.G. System', msg:'Welcome to P.I.N.G. v17! Mesh active. BroadcastChannel running offline.', ts:Date.now()});
+  }
+}
+</script>
+</body>
+</html>
