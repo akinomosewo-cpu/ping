@@ -309,6 +309,46 @@ input,select,textarea{font-family:inherit;color:var(--txt);}
 #toast.show{display:block;}
 
 @media(max-width:480px){#app{max-width:100%;}}
+
+/* ─── AUTH SCREEN ──────────────────────────────────────── */
+#auth-screen{
+  position:fixed;inset:0;z-index:10000;
+  background:var(--bg);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:1.5rem;overflow-y:auto;
+}
+#auth-screen.hidden{display:none;}
+.auth-logo{display:flex;flex-direction:column;align-items:center;gap:.5rem;margin-bottom:1.8rem;}
+.auth-logo-ring{width:64px;height:64px;border-radius:50%;background:rgba(41,182,246,.1);border:2px solid rgba(41,182,246,.3);display:flex;align-items:center;justify-content:center;}
+.auth-title{font-size:1.35rem;font-weight:900;letter-spacing:.22em;color:var(--blue);}
+.auth-sub{font-size:.62rem;color:var(--txt3);letter-spacing:.06em;text-align:center;}
+.auth-card{width:100%;max-width:380px;background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:1.3rem 1.2rem;}
+.auth-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.1rem;}
+.auth-tab{flex:1;padding:.58rem .4rem;font-size:.7rem;font-weight:600;color:var(--txt3);border-bottom:2px solid transparent;transition:all .15s;text-transform:uppercase;letter-spacing:.04em;background:none;}
+.auth-tab.on{color:var(--blue);border-bottom-color:var(--blue);}
+.auth-form{display:flex;flex-direction:column;gap:.7rem;}
+.auth-form.hidden{display:none;}
+.auth-field{display:flex;flex-direction:column;gap:.28rem;}
+.auth-label{font-size:.54rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.08em;font-weight:600;}
+.auth-input{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:.62rem .82rem;font-size:.85rem;color:var(--txt);outline:none;width:100%;-webkit-appearance:none;}
+.auth-input:focus{border-color:rgba(41,182,246,.45);}
+.auth-input.err{border-color:var(--red);}
+.auth-row{display:flex;gap:.55rem;}
+.auth-row .auth-field{flex:1;}
+.auth-hint{font-size:.6rem;color:var(--txt3);line-height:1.5;margin-top:-.2rem;}
+.auth-hint a{color:var(--blue);}
+.auth-err{font-size:.68rem;color:var(--red);background:rgba(229,57,53,.08);border:1px solid rgba(229,57,53,.18);border-radius:8px;padding:.42rem .7rem;display:none;}
+.auth-err.show{display:block;}
+.auth-divider{display:flex;align-items:center;gap:.55rem;margin:.1rem 0;}
+.auth-divider span{font-size:.58rem;color:var(--txt3);white-space:nowrap;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.auth-vkey{background:rgba(41,182,246,.04);border:1px solid rgba(41,182,246,.15);border-radius:10px;padding:.65rem .8rem;margin-top:.1rem;}
+.auth-vkey-label{font-size:.54rem;color:var(--blue);font-weight:700;letter-spacing:.07em;margin-bottom:.4rem;}
+.auth-vkey p{font-size:.66rem;color:var(--txt2);line-height:1.5;}
+.auth-spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle;margin-right:.4rem;}
+.auth-skip{font-size:.65rem;color:var(--txt3);text-align:center;margin-top:.85rem;cursor:pointer;}
+.auth-skip span{color:var(--blue);text-decoration:underline;}
+
 </style>
 </head>
 <body>
@@ -642,6 +682,95 @@ input,select,textarea{font-family:inherit;color:var(--txt);}
 </div><!-- /content -->
 </div><!-- /app -->
 
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-logo">
+    <div class="auth-logo-ring">
+      <svg width="30" height="30" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="3" fill="#29b6f6"/>
+        <circle cx="14" cy="14" r="7.5" stroke="#29b6f6" stroke-width="1.5" fill="none" opacity=".7"/>
+        <circle cx="14" cy="14" r="12" stroke="#29b6f6" stroke-width=".8" fill="none" opacity=".25"/>
+      </svg>
+    </div>
+    <div class="auth-title">P.I.N.G.</div>
+    <div class="auth-sub">Protection In Nigeria · Community Safety Mesh</div>
+  </div>
+
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab on" id="atab-login" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" id="atab-signup" onclick="switchAuthTab('signup')">Create Account</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form class="auth-form" id="auth-login" onsubmit="return false;">
+      <div class="auth-field">
+        <label class="auth-label">Email or @Username</label>
+        <input class="auth-input" id="login-email" type="text" placeholder="you@example.com" autocomplete="username"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Village Key</label>
+        <input class="auth-input" id="login-vkey" type="text" placeholder="e.g. LAG8821" autocomplete="off" style="text-transform:uppercase;letter-spacing:.12em;font-family:monospace;"/>
+        <p class="auth-hint">Your community key — check your email or ask your Village President.</p>
+      </div>
+      <div class="auth-err" id="login-err"></div>
+      <button class="btn-p" id="login-btn" onclick="doLogin()">Sign In →</button>
+      <div class="auth-divider"><span>or</span></div>
+      <button class="btn-p" style="background:#0a3d6b;" onclick="doGuestMode()">👤 Continue as Guest</button>
+    </form>
+
+    <!-- SIGNUP FORM -->
+    <form class="auth-form hidden" id="auth-signup" onsubmit="return false;">
+      <div class="auth-row">
+        <div class="auth-field">
+          <label class="auth-label">First Name</label>
+          <input class="auth-input" id="su-fname" type="text" placeholder="Amara" autocomplete="given-name"/>
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Last Name</label>
+          <input class="auth-input" id="su-lname" type="text" placeholder="Okafor" autocomplete="family-name"/>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Username</label>
+        <input class="auth-input" id="su-username" type="text" placeholder="@amara_w" autocomplete="username" oninput="this.value=this.value.replace(/[^a-z0-9_]/gi,'').toLowerCase()"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" id="su-email" type="email" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Phone</label>
+        <input class="auth-input" id="su-phone" type="tel" placeholder="+234 801 234 5678" autocomplete="tel"/>
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Role in Community</label>
+        <select class="auth-input" id="su-role" style="-webkit-appearance:none;">
+          <option value="resident">Resident</option>
+          <option value="security">Security / Vigilante</option>
+          <option value="president">Village President</option>
+          <option value="health">Health Worker</option>
+          <option value="teacher">Teacher / Education</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="auth-vkey">
+        <div class="auth-vkey-label">🔑 Village Key</div>
+        <p>Enter your community's village key. Ask your Village President or check your welcome email.</p>
+        <div class="auth-field" style="margin-top:.5rem;">
+          <input class="auth-input" id="su-vkey" type="text" placeholder="e.g. FCT2801" style="text-transform:uppercase;letter-spacing:.12em;font-family:monospace;" autocomplete="off"/>
+        </div>
+      </div>
+      <div class="auth-err" id="signup-err"></div>
+      <button class="btn-p" id="signup-btn" onclick="doSignup()">Create Account →</button>
+      <div class="auth-divider"><span>or</span></div>
+      <button class="btn-p" style="background:#0a3d6b;" onclick="doGuestMode()">👤 Continue as Guest</button>
+    </form>
+  </div>
+  <div class="auth-skip" onclick="doGuestMode()">Skip for now — <span>use as guest</span></div>
+</div>
+
 <!-- FAKE CALL OVERLAY -->
 <div id="fake-call">
   <div class="fc-status">Incoming Call</div>
@@ -727,9 +856,7 @@ const CHECKIN_MSGS = [
 // BOOT
 // ═══════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
-  loadUser();
-  loadAlerts();
-  renderUser();
+  bootAuth();
   initMesh();
   initLocation();
   renderSafezones();
@@ -737,7 +864,6 @@ window.addEventListener('DOMContentLoaded', () => {
   registerSW();
   window.addEventListener('online',  () => showToast('✅ Back online'));
   window.addEventListener('offline', () => showToast('📡 Offline — mesh still active'));
-  seedDemo();
 });
 
 // ═══════════════════════════════════════════════════════
@@ -1269,15 +1395,60 @@ async function connectRTC() {
   const btn = document.getElementById('btn-rtc');
   btn.disabled = true; btn.textContent = '🔗 Signaling…';
   mesh.rtcStatus = 'signaling'; updateMeshUI();
-  // Demo: simulate WebRTC signaling (real impl needs Supabase Realtime or WS)
-  await new Promise(r=>setTimeout(r,2000));
-  mesh.rtcStatus = 'connected'; mesh.transport = 'webrtc'; mesh.connected = true;
-  mesh.peers.push({id:'rtc_'+Date.now(), name:'LAN peer', transport:'webrtc'});
-  document.getElementById('btn-disc').style.display = '';
-  document.getElementById('dot-mesh').classList.add('on');
-  btn.disabled = false; btn.textContent = '🔗 Join WebRTC (LAN)';
-  updateMeshUI(); showToast('🔗 WebRTC peer connected');
-  meshLog('SYS','WebRTC peer joined','system');
+  // Real WebRTC peer-to-peer via BroadcastChannel signaling (same device/network)
+  // For cross-device signaling, Supabase Realtime is needed (see supabase-setup.sql)
+  try {
+    const pc = new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+    const dc = pc.createDataChannel('ping_mesh', {ordered:false, maxRetransmits:0});
+    dc.onopen = () => {
+      mesh.rtcStatus = 'connected'; mesh.transport = 'webrtc'; mesh.connected = true;
+      mesh.peers.push({id:'rtc_'+Date.now(), name:'WebRTC peer', transport:'webrtc'});
+      document.getElementById('btn-disc').style.display = '';
+      document.getElementById('dot-mesh').classList.add('on');
+      updateMeshUI(); showToast('🔗 WebRTC channel open');
+      meshLog('SYS','WebRTC data channel open','system');
+      window._pingRTCdc = dc;
+    };
+    dc.onmessage = e => { try { onMeshPkt(JSON.parse(e.data)); } catch {} };
+    dc.onerror = () => meshLog('ERR','WebRTC channel error','system');
+    // Listen for answer via BroadcastChannel (same LAN)
+    const sigCh = new BroadcastChannel('ping_rtc_sig');
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    sigCh.postMessage({type:'offer', sdp:pc.localDescription.sdp, from:user.username||user.userId});
+    sigCh.onmessage = async e => {
+      const msg = e.data;
+      if (msg.type === 'answer' && pc.signalingState === 'have-local-offer') {
+        try { await pc.setRemoteDescription(new RTCSessionDescription({type:'answer',sdp:msg.sdp})); } catch {}
+      }
+      if (msg.type === 'offer' && msg.from !== (user.username||user.userId)) {
+        // Answer incoming offer
+        const pc2 = new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+        pc2.ondatachannel = ev => {
+          const rdc = ev.channel;
+          rdc.onopen = () => { mesh.peers.push({id:'rtc2_'+Date.now(),name:'Peer '+msg.from,transport:'webrtc'}); updateMeshUI(); showToast('🔗 Peer '+msg.from+' connected'); window._pingRTCdc2=rdc; };
+          rdc.onmessage = e2 => { try { onMeshPkt(JSON.parse(e2.data)); } catch {} };
+        };
+        await pc2.setRemoteDescription(new RTCSessionDescription({type:'offer',sdp:msg.sdp}));
+        const ans = await pc2.createAnswer();
+        await pc2.setLocalDescription(ans);
+        sigCh.postMessage({type:'answer',sdp:pc2.localDescription.sdp});
+      }
+    };
+    // If no peer answers in 5s, show helpful message
+    setTimeout(() => {
+      if (mesh.rtcStatus === 'signaling') {
+        mesh.rtcStatus = 'idle'; updateMeshUI();
+        showMeshError('No peer found nearby. Open P.I.N.G. on another device on the same network, then retry.');
+        btn.disabled = false; btn.textContent = '🔗 Join WebRTC (LAN)';
+        meshLog('SYS','No peer responded — open app on another device','system');
+      }
+    }, 5000);
+  } catch(e) {
+    mesh.rtcStatus = 'idle'; updateMeshUI();
+    showMeshError('WebRTC error: '+e.message);
+    btn.disabled = false; btn.textContent = '🔗 Join WebRTC (LAN)';
+  }
 }
 
 function disconnectAll() {
@@ -1299,6 +1470,12 @@ function meshBroadcast(pkt) {
       bleChar.writeValueWithoutResponse(b).catch(()=>bleChar.writeValueWithResponse(b).catch(()=>{}));
     } catch {}
   }
+  // Send over WebRTC data channels if open
+  [window._pingRTCdc, window._pingRTCdc2].forEach(dc => {
+    if (dc && dc.readyState === 'open') {
+      try { dc.send(JSON.stringify(pkt)); } catch {}
+    }
+  });
 }
 
 function onMeshPkt(pkt) {
@@ -1375,9 +1552,15 @@ function saveSettings() {
 function showLogoutConfirm() { document.getElementById('logout-confirm').style.display=''; }
 function doLogout() {
   localStorage.removeItem(STORE); localStorage.removeItem(ALSTORE);
-  user={isVerified:false, language:'en'};
+  alerts = []; commMsgs = []; dmMsgs = {};
+  user={isVerified:false, userId:null, email:'', username:'', firstName:'', lastName:'',
+    phone:'', role:'resident', villageId:null, villageKey:'', villageDisplayName:'',
+    region:null, language:'en', authMethod:'none', languageLocked:false};
   document.getElementById('logout-confirm').style.display='none';
-  showToast('Logged out'); renderUser();
+  renderUser();
+  showAuthScreen();
+  switchAuthTab('login');
+  showToast('Logged out');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1394,24 +1577,165 @@ function showToast(msg) {
 }
 
 // ═══════════════════════════════════════════════════════
-// DEMO SEED
+// AUTH
 // ═══════════════════════════════════════════════════════
-function seedDemo() {
-  if (!user.firstName) {
-    user={
-      isVerified:true, userId:'demo_'+Date.now(),
-      email:'myuser@email.com', username:'chdigoh2801',
-      firstName:'SIDOUT', lastName:'GICHAN',
-      phone:'+234 801 234 5678', role:'President',
-      villageId:'v_fct', villageKey:'FCT2801', villageDisplayName:'Abuja (FCT)',
-      region:{name:'Abuja (FCT)', key:'FCT'},
-      language:'en', authMethod:'Email', languageLocked:false,
+
+// Village key registry (offline validation)
+const VILLAGE_KEYS = {
+  'LAG0001':'Lagos Island','LAG2801':'Lagos Mainland','LAG8821':'Lagos (Ikeja)',
+  'FCT2801':'Abuja (FCT)','FCT0001':'Abuja Central',
+  'KAN0001':'Kano Central','RIV0001':'Port Harcourt',
+  'OYO0001':'Ibadan','KAD0001':'Kaduna','ENU0001':'Enugu',
+  'GUEST00':'Guest Access',
+};
+
+function getVillageByKey(key) {
+  return VILLAGE_KEYS[key.toUpperCase().trim()] || null;
+}
+
+function showAuthScreen() {
+  document.getElementById('auth-screen').classList.remove('hidden');
+}
+function hideAuthScreen() {
+  document.getElementById('auth-screen').classList.add('hidden');
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('auth-login').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('auth-signup').classList.toggle('hidden', tab !== 'signup');
+  document.getElementById('atab-login').classList.toggle('on', tab === 'login');
+  document.getElementById('atab-signup').classList.toggle('on', tab === 'signup');
+  document.getElementById('login-err').classList.remove('show');
+  document.getElementById('signup-err').classList.remove('show');
+}
+
+function showAuthErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.classList.add('show');
+}
+
+function doLogin() {
+  const emailVal = document.getElementById('login-email').value.trim();
+  const vkeyVal  = document.getElementById('login-vkey').value.trim().toUpperCase();
+  document.getElementById('login-err').classList.remove('show');
+  if (!emailVal) { showAuthErr('login-err','Please enter your email or username'); return; }
+  if (!vkeyVal)  { showAuthErr('login-err','Please enter your village key'); return; }
+  const villageName = getVillageByKey(vkeyVal);
+  if (!villageName) { showAuthErr('login-err','Invalid village key. Ask your Village President.'); return; }
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="auth-spinner"></span>Signing in…';
+  setTimeout(() => {
+    const isEmail = emailVal.includes('@') && emailVal.includes('.');
+    user = {
+      ...user,
+      isVerified: true,
+      userId: 'u_' + Date.now(),
+      email: isEmail ? emailVal : '',
+      username: isEmail ? emailVal.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g,'') : emailVal.replace('@','').toLowerCase(),
+      firstName: isEmail ? emailVal.split('@')[0] : emailVal.replace('@',''),
+      lastName: '',
+      villageKey: vkeyVal,
+      villageDisplayName: villageName,
+      region: detectRegionFromKey(vkeyVal),
+      authMethod: 'Village Key',
+      languageLocked: false,
     };
     saveUser();
-  }
+    renderUser();
+    hideAuthScreen();
+    addAlert({type:'INFO', from:'P.I.N.G. System', msg:'Welcome back! Mesh active. BroadcastChannel running.', ts:Date.now()});
+    btn.disabled = false;
+    btn.textContent = 'Sign In →';
+  }, 900);
+}
+
+function doSignup() {
+  const fname = document.getElementById('su-fname').value.trim();
+  const lname = document.getElementById('su-lname').value.trim();
+  const uname = document.getElementById('su-username').value.trim().toLowerCase();
+  const email = document.getElementById('su-email').value.trim();
+  const phone = document.getElementById('su-phone').value.trim();
+  const role  = document.getElementById('su-role').value;
+  const vkey  = document.getElementById('su-vkey').value.trim().toUpperCase();
+  document.getElementById('signup-err').classList.remove('show');
+  if (!fname)  { showAuthErr('signup-err','First name is required'); return; }
+  if (!uname)  { showAuthErr('signup-err','Username is required'); return; }
+  if (uname.length < 3) { showAuthErr('signup-err','Username must be at least 3 characters'); return; }
+  if (!email || !email.includes('@')) { showAuthErr('signup-err','Please enter a valid email'); return; }
+  if (!vkey)   { showAuthErr('signup-err','Village key is required to join your community'); return; }
+  const villageName = getVillageByKey(vkey);
+  if (!villageName) { showAuthErr('signup-err','Invalid village key — check with your Village President'); return; }
+  const btn = document.getElementById('signup-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="auth-spinner"></span>Creating account…';
+  setTimeout(() => {
+    user = {
+      isVerified: true,
+      userId: 'u_' + Date.now(),
+      email, username: uname,
+      firstName: fname, lastName: lname,
+      phone, role,
+      villageKey: vkey, villageDisplayName: villageName,
+      region: detectRegionFromKey(vkey),
+      language: 'en', authMethod: 'Email',
+      languageLocked: false,
+    };
+    saveUser();
+    renderUser();
+    hideAuthScreen();
+    addAlert({type:'INFO', from:'P.I.N.G. System', msg:'Welcome to P.I.N.G., @'+uname+'! Your account is active. Community mesh is running.', ts:Date.now()});
+    btn.disabled = false;
+    btn.textContent = 'Create Account →';
+  }, 1100);
+}
+
+function doGuestMode() {
+  user = {
+    isVerified: true,
+    userId: 'guest_' + Date.now(),
+    email: '', username: 'guest_' + Math.floor(Math.random()*9000+1000),
+    firstName: 'Guest', lastName: '',
+    phone: '', role: 'resident',
+    villageKey: 'GUEST00', villageDisplayName: 'Nigeria (Guest)',
+    region: {name:'Nigeria', key:'NG'},
+    language: 'en', authMethod: 'Guest',
+    languageLocked: false,
+  };
+  saveUser();
   renderUser();
+  hideAuthScreen();
+  addAlert({type:'INFO', from:'P.I.N.G. System', msg:'You are in guest mode. Sign in with a village key to join your community.', ts:Date.now()});
+}
+
+function detectRegionFromKey(key) {
+  const k = key.toUpperCase();
+  if (k.startsWith('LAG')) return {name:'Lagos', key:'LAG'};
+  if (k.startsWith('FCT')) return {name:'Abuja (FCT)', key:'FCT'};
+  if (k.startsWith('KAN')) return {name:'Kano', key:'KAN'};
+  if (k.startsWith('RIV')) return {name:'Rivers', key:'RIV'};
+  if (k.startsWith('OYO')) return {name:'Oyo', key:'OYO'};
+  if (k.startsWith('KAD')) return {name:'Kaduna', key:'KAD'};
+  if (k.startsWith('ENU')) return {name:'Enugu', key:'ENU'};
+  return {name:'Nigeria', key:'NG'};
+}
+
+// ─── Boot: check if user is logged in ────────────────────
+function bootAuth() {
+  loadUser();
+  if (user.isVerified && user.userId) {
+    hideAuthScreen();
+    loadAlerts();
+    renderUser();
+    addWelcomeAlert();
+  } else {
+    showAuthScreen();
+  }
+}
+
+function addWelcomeAlert() {
   if (!alerts.length) {
-    addAlert({type:'INFO', from:'P.I.N.G. System', msg:'Welcome to P.I.N.G. v17! Mesh active. BroadcastChannel running offline.', ts:Date.now()});
+    addAlert({type:'INFO', from:'P.I.N.G. System', msg:'Welcome back, @'+user.username+'! Mesh active. BroadcastChannel running offline.', ts:Date.now()});
   }
 }
 </script>
